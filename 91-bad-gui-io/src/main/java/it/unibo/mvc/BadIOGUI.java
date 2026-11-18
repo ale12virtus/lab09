@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Random;
 
@@ -43,9 +44,16 @@ public class BadIOGUI {
         final JPanel canvas = new JPanel();
         canvas.setLayout(new BorderLayout());
         final JButton write = new JButton("Write on file");
-        canvas.add(write, BorderLayout.CENTER);
         frame.setContentPane(canvas);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //new jpanel
+        final JPanel panel1 = new JPanel();
+        canvas.add(panel1, BorderLayout.CENTER);
+        panel1.setLayout(new BoxLayout(panel1, BoxLayout.X_AXIS));
+        panel1.add(write);
+        //new button
+        final JButton read = new JButton("Read");
+        panel1.add(read);
         /*
          * Handlers
          */
@@ -62,6 +70,23 @@ public class BadIOGUI {
                      */
                     try (PrintStream ps = new PrintStream(PATH, StandardCharsets.UTF_8)) {
                         ps.print(randomGenerator.nextInt());
+                    } catch (final IOException e) {
+                        JOptionPane.showMessageDialog(frame, e, "Error", JOptionPane.ERROR_MESSAGE);
+                        e.printStackTrace(); // NOPMD: allowed as this is just an exercise
+                    }
+                }
+            }
+        );
+
+        read.addActionListener(
+            new ActionListener() {
+                @Override
+                public void actionPerformed(final ActionEvent ignored) {
+                    try {
+                        final List<String> list = Files.readAllLines(Path.of(PATH));
+                        for (final String s : list) {
+                            System.out.println(s);
+                        }
                     } catch (final IOException e) {
                         JOptionPane.showMessageDialog(frame, e, "Error", JOptionPane.ERROR_MESSAGE);
                         e.printStackTrace(); // NOPMD: allowed as this is just an exercise
@@ -93,6 +118,7 @@ public class BadIOGUI {
         /*
          * OK, ready to push the frame onscreen
          */
+        frame.pack();
         frame.setVisible(true);
     }
 
